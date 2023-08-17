@@ -20,7 +20,7 @@ module.exports = {
     ecmaVersion: "latest",
   },
   rules: {
-    "no-underscore-dangle": "error",
+    "no-underscore-dangle": "off",
     "no-console": "off",
   },
 };
