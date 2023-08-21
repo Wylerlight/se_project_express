@@ -1,13 +1,14 @@
 const ClothingItem = require("../models/clothingItem");
 
 module.exports.createClothingItem = (req, res) => {
-  const { itemName, weatherType, imageUrl } = req.body;
+  const { name, weather, imageUrl } = req.body;
   console.log(req.user._id);
-  ClothingItem.create({ itemName, weatherType, imageUrl, owner: req.user._id })
+
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error" });
+      res.status(500).send({ message: "Error from create clothing" });
     });
 };
 module.exports.getClothingItem = (req, res) => {
@@ -17,7 +18,7 @@ module.exports.getClothingItem = (req, res) => {
     })
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error" });
+      res.status(500).send({ message: "Error from get clothing" });
     });
 };
 module.exports.deleteClothingItem = (req, res) => {
@@ -26,6 +27,6 @@ module.exports.deleteClothingItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error" });
+      res.status(500).send({ message: "Error from delete clothing" });
     });
 };

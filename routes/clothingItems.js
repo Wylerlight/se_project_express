@@ -5,11 +5,15 @@ const {
   createClothingItem,
   deleteClothingItem,
 } = require("../controllers/clothingItems");
+const { likeItem, dislikeItem } = require("../controllers/likes");
 
-router.get("/items", getClothingItem);
+router.get("/", getClothingItem);
 
-router.post("/items", createClothingItem);
+router.post("/", createClothingItem);
 
-router.delete("/items/:itemId", deleteClothingItem);
+router.delete("/:itemId", deleteClothingItem);
+
+router.put("/:itemId/likes", likeItem);
+router.delete("/:itemId/likes", dislikeItem);
 
 module.exports = router;
