@@ -10,10 +10,11 @@ module.exports.createClothingItem = (req, res) => {
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
-      // res.status(500).send({ message: "Error from create clothing" });
     });
 };
 module.exports.getClothingItem = (req, res) => {
+  console.log(req);
+
   ClothingItem.find({})
     .then((items) => {
       res.status(200).send({ data: items });
@@ -21,16 +22,16 @@ module.exports.getClothingItem = (req, res) => {
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
-      // res.status(500).send({ message: "Error from get clothing" });
     });
 };
 module.exports.deleteClothingItem = (req, res) => {
-  ClothingItem.findById(req.params.id)
+  console.log(req);
+  console.log(req.user._id);
+  ClothingItem.findById(req.user._id)
     // .orFail()
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
-      // res.status(500).send({ message: "Error from delete clothing" });
     });
 };

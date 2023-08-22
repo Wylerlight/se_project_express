@@ -4,7 +4,7 @@ const { handleErrors } = require("../utils/errors");
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.send({ data: users });
+      res.status(200).send({ data: users });
     })
     .catch((e) => {
       console.error(e);
@@ -13,13 +13,15 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  User.findById(req.params.id)
-    // .orFail()
+  console.log("//////////////////////////////////////////////////////");
+  console.log(req);
+  // console.log(req.users._id);
+  User.findById(req.user._id)
+    .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
-      // res.status(400).send({ message: "Error at get user by id" });
     });
 };
 
@@ -31,6 +33,5 @@ module.exports.createUser = (req, res) => {
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
-      // res.status(400).send({ message: "Error at create user" });
     });
 };
