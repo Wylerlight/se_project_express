@@ -1,4 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
+const { handleErrors } = require("../utils/errors");
 
 module.exports.createClothingItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -8,7 +9,8 @@ module.exports.createClothingItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error from create clothing" });
+      handleErrors(req, res, e);
+      // res.status(500).send({ message: "Error from create clothing" });
     });
 };
 module.exports.getClothingItem = (req, res) => {
@@ -18,15 +20,17 @@ module.exports.getClothingItem = (req, res) => {
     })
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error from get clothing" });
+      handleErrors(req, res, e);
+      // res.status(500).send({ message: "Error from get clothing" });
     });
 };
 module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findById(req.params.id)
-    .orFail()
+    // .orFail()
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error from delete clothing" });
+      handleErrors(req, res, e);
+      // res.status(500).send({ message: "Error from delete clothing" });
     });
 };

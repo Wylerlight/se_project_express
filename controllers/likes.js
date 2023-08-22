@@ -1,4 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
+const { handleErrors } = require("../utils/errors");
 
 module.exports.likeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
@@ -9,7 +10,11 @@ module.exports.likeItem = (req, res) =>
     .then((item) => {
       res.status(200).send({ data: item });
     })
-    .catch(() => res.status(500).send({ message: "Error" }));
+    .catch((e) => {
+      console.error(e);
+      handleErrors(req, res, e);
+      // res.status(500).send({ message: "Error" });
+    });
 
 module.exports.dislikeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
@@ -18,4 +23,8 @@ module.exports.dislikeItem = (req, res) =>
     { new: true },
   )
     .then((item) => res.send({ data: item }))
-    .catch(() => res.status(500).send({ message: "Error" }));
+    .catch((e) => {
+      console.error(e);
+      handleErrors(req, res, e);
+      // res.status(500).send({ message: "Error" });
+    });
