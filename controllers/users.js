@@ -13,10 +13,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  console.log("//////////////////////////////////////////////////////");
-  console.log(req);
-  // console.log(req.users._id);
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
