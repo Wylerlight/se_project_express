@@ -4,11 +4,11 @@ const { handleErrors } = require("../utils/errors");
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send({ data: users });
+      res.send({ data: users });
     })
     .catch((e) => {
       console.error(e);
-      res.status(500).send({ message: "Error at find all users" });
+      handleErrors(req, res, e);
     });
 };
 

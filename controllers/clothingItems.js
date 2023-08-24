@@ -14,7 +14,7 @@ module.exports.createClothingItem = (req, res) => {
 module.exports.getClothingItem = (req, res) => {
   ClothingItem.find({})
     .then((items) => {
-      res.status(200).send({ data: items });
+      res.send({ data: items });
     })
     .catch((e) => {
       console.error(e);
