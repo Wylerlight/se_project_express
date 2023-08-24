@@ -12,8 +12,6 @@ module.exports.createClothingItem = (req, res) => {
     });
 };
 module.exports.getClothingItem = (req, res) => {
-  console.log("////////////////////////////////////////////////////////");
-  console.log(req);
   ClothingItem.find({})
     .then((items) => {
       res.status(200).send({ data: items });
