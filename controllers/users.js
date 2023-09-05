@@ -32,13 +32,13 @@ module.exports.createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => {
-      User.create({ name, avatar, email, password: hash });
+      return User.create({ name, avatar, email, password: hash });
     })
     .then((user) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      // console.error(err);
+      console.error(err);
       handleErrors(req, res, err);
     });
 };

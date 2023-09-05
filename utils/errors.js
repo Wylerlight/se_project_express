@@ -13,12 +13,12 @@ function handleErrors(req, res, err) {
   if (err.name === "ValidationError" || err.name === "CastError") {
     return res.status(ERROR_400).send({ message: "Invalid data" });
   }
-  if (err.name === "Authentication Error") {
+  if (err.name === "Error") {
     return res
       .status(ERROR_401)
       .send({ message: "Email or Password not found" });
   }
-  if (err.name === "Error") {
+  if (err.name === "RangeError") {
     return res.status(ERROR_11000).send({ message: "Duplicate data" });
   }
   return res.status(ERROR_500).send({
