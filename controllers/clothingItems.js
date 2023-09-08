@@ -12,7 +12,6 @@ module.exports.createClothingItem = (req, res) => {
     });
 };
 module.exports.getClothingItem = (req, res) => {
-  console.log(req.user._id);
   ClothingItem.find({})
     .then((items) => {
       res.send({ data: items });
@@ -23,8 +22,15 @@ module.exports.getClothingItem = (req, res) => {
     });
 };
 module.exports.deleteClothingItem = (req, res) => {
-  console.log(req.params.itemId);
-  if (req.params.itemId !== req.user._id) {
+  const { itemId } = req.params;
+  console.log(itemId);
+  console.log(req.user._id);
+
+  ClothingItem.findOne({ itemId }).then((item) => {
+    console.log(item);
+  });
+
+  if (req.user._id !== req.owner) {
     res.status(403).send({ message: "Forbidden" });
   } else {
     ClothingItem.findByIdAndDelete(req.params.itemId)
