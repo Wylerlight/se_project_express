@@ -26,22 +26,22 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email, password, name, avatar } = req.body;
 
-  User.findOne({ email }).then((userFound) => {
-    console.log(userFound);
-    if (userFound) {
-      res.status(409).send({ message: "User already exists" });
-    }
-  });
-
-  bcrypt
-    .hash(password, 10)
+  User.findOne({ email })
+    .then((userFound) => {
+      console.log(userFound);
+      if (userFound) {
+        res.status(409).send({ message: "User already exists" });
+      }
+      return bcrypt.hash(password, 10);
+    })
     .then((hash) => {
       return User.create({ name, avatar, email, password: hash });
     })
     .then((user) => {
+      console.log(user);
       res.send({ name, avatar, email, _id: user._id });
     })
     .catch((err) => {
@@ -66,16 +66,15 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.getCurrentUser = (req, res, next) => {
-  // const { _id: userId } = req.user;
-  console.log(req);
+module.exports.getCurrentUser = (req, res) => {
+  const { _id: userId } = req.user;
 
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        next(res.status(404).send({ message: "User not found" }));
+        res.status(404).send({ message: "User not found" });
       }
-      return next(res.send(user));
+      return res.send(user);
     })
     .catch((err) => {
       handleErrors(req, res, err);
