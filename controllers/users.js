@@ -5,6 +5,10 @@ const { JWT_SECRET } = require("../utils/config");
 
 const { handleErrors } = require("../utils/errors");
 
+function errorHandle(err) {
+  console.log(err);
+}
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
@@ -28,6 +32,7 @@ module.exports.getUser = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
+  console.log(req.body);
 
   User.findOne({ email }).then((emailFound) => {
     if (emailFound) {
@@ -49,6 +54,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   User.findUserByCredentials(email, password)
     .then((user) => {
