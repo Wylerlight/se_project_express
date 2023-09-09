@@ -27,11 +27,27 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
+  console.log(req.body);
+  const { email, password, name, avatar } = req.body;
+
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      return User.create({ name, avatar, email, password: hash });
+    })
+    .then((user) => {
+      res.send({ name, avatar, email, _id: user._id });
+    })
+    .catch((err) => {
+      console.error(err, "console error for createUser");
+      handleErrors(req, res, err);
+    });
+};
+/* module.exports.createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
   User.findOne({ email })
     .then((userFound) => {
-      if (userFound) {
-        console.log(userFound.email);
+      if (!userFound) {
         return res.status(409).send({ message: "User already exists" });
       }
       return bcrypt.hash(password, 10);
@@ -46,7 +62,7 @@ module.exports.createUser = (req, res) => {
       console.error(err, "console error for createUser");
       handleErrors(req, res, err);
     });
-};
+}; */
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
