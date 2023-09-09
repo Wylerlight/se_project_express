@@ -23,6 +23,7 @@ validate: {
       },
       message: "You must enter a valid email",
     },
+    unique: true,
 
 
  */

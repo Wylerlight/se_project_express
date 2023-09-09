@@ -27,7 +27,6 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  console.log(req.body);
   const { email, password, name, avatar } = req.body;
 
   User.findOne({ email }).then((emailFound) => {

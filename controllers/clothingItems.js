@@ -27,7 +27,6 @@ module.exports.deleteClothingItem = (req, res) => {
 
   ClothingItem.findById(itemId).then((item) => {
     const itemOwner = item.owner.toString();
-    console.log(itemOwner);
 
     if (req.user._id !== itemOwner) {
       res.status(403).send({ message: "Forbidden" });
@@ -35,7 +34,6 @@ module.exports.deleteClothingItem = (req, res) => {
       ClothingItem.findByIdAndDelete(itemId)
         .orFail()
         .then((itemRes) => {
-          console.log(itemRes);
           res.send({ data: itemRes });
         })
         .catch((e) => {
