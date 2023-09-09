@@ -29,22 +29,17 @@ module.exports.getUser = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
   User.findOne({ email })
-    .then((err, userFound) => {
-      console.log(err);
-      console.log(userFound, "user found");
+    .then((userFound) => {
       if (userFound) {
-        console.log(userFound);
-        handleErrors(req, res, err);
-        console.log(err);
-        // res.status(409).send({ message: "User already exists" });
+        console.log(userFound.email);
+        return res.status(409).send({ message: "User already exists" });
       }
       return bcrypt.hash(password, 10);
     })
     .then((hash) => {
-      return User.create({ name, avatar, email, password: hash });
+      User.create({ name, avatar, email, password: hash });
     })
     .then((user) => {
-      console.log(user, "user");
       res.send({ name, avatar, email, _id: user._id });
     })
     .catch((err) => {

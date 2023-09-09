@@ -14,7 +14,7 @@ function handleErrors(req, res, err) {
   if (err.name === "ValidationError" || err.name === "CastError") {
     return res.status(ERROR_400).send({ message: "Invalid data" });
   }
-  if (err.name === "Some Error") {
+  if (err.name === "Conflict") {
     return res.status(ERROR_409).send({ message: "User already exists" });
   }
   if (err.name === "Error") {
