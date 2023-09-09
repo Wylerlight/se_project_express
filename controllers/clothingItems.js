@@ -25,21 +25,26 @@ module.exports.getClothingItem = (req, res) => {
 module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findById(itemId).then((item) => {
-    const itemOwner = item.owner.toString();
+  ClothingItem.findById(itemId)
+    .then((item) => {
+      const itemOwner = item.owner.toString();
 
-    if (req.user._id !== itemOwner) {
-      res.status(403).send({ message: "Forbidden" });
-    } else {
-      ClothingItem.findByIdAndDelete(itemId)
-        .orFail()
-        .then((itemRes) => {
-          res.send({ data: itemRes });
-        })
-        .catch((e) => {
-          console.error(e);
-          handleErrors(req, res, e);
-        });
-    }
-  });
+      if (req.user._id !== itemOwner) {
+        res.status(403).send({ message: "Forbidden" });
+      } else {
+        ClothingItem.findByIdAndDelete(itemId)
+          .orFail()
+          .then((itemRes) => {
+            res.send({ data: itemRes });
+          })
+          .catch((e) => {
+            console.error(e);
+            handleErrors(req, res, e);
+          });
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      handleErrors(req, res, e);
+    });
 };
