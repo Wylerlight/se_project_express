@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const { handleErrors } = require("../utils/errors");
+const { handleErrors, ERROR_404, ERROR_409 } = require("../utils/errors");
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -19,7 +19,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((e) => {
       console.error(e);
       handleErrors(req, res, e);
@@ -31,7 +31,7 @@ module.exports.createUser = (req, res) => {
 
   User.findOne({ email }).then((emailFound) => {
     if (emailFound) {
-      res.status(409).send({ message: "User already exists" });
+      res.status(ERROR_409).send({ message: "User already exists" });
     } else {
       bcrypt
         .hash(password, 10)
@@ -69,7 +69,7 @@ module.exports.getCurrentUser = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: "User not found" });
+        res.status(ERROR_404).send({ message: "User not found" });
       }
       return res.send(user);
     })
@@ -85,7 +85,7 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(
     userId,
     { name, avatar },
-    { new: true, runValidators: true, upsert: true },
+    { new: true, runValidators: true },
   )
     .then((user) => {
       res.send({ data: user });

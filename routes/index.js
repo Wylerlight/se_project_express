@@ -14,16 +14,3 @@ router.use((req, res) => {
 });
 
 module.exports = router;
-
-/*
-
-validate: {
-      validator(value) {
-        return validator.isEmail(value);
-      },
-      message: "You must enter a valid email",
-    },
-    unique: true,
-
-
- */
