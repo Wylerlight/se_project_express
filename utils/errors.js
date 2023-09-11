@@ -1,8 +1,8 @@
-export const ERROR_400 = 400;
-export const ERROR_401 = 401;
-export const ERROR_404 = 404;
-export const ERROR_500 = 500;
-export const ERROR_409 = 409;
+const ERROR_400 = 400;
+const ERROR_401 = 401;
+const ERROR_404 = 404;
+const ERROR_409 = 409;
+const ERROR_500 = 500;
 
 function handleErrors(req, res, err) {
   console.log(err.name, "This is the console.log");
@@ -23,4 +23,11 @@ function handleErrors(req, res, err) {
   });
 }
 
-module.exports = { ERROR_400, ERROR_404, ERROR_500, handleErrors };
+module.exports = {
+  ERROR_400,
+  ERROR_401,
+  ERROR_404,
+  ERROR_409,
+  ERROR_500,
+  handleErrors,
+};
