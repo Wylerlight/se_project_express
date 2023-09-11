@@ -25,11 +25,3 @@ app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log("app listening");
 });
-
-app.get("/", (req, res, next) => {
-  try {
-    throw new Error("Message");
-  } catch (error) {
-    next(error);
-  }
-});
