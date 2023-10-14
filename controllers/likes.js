@@ -3,7 +3,7 @@ const { handleErrors } = require("../utils/errors");
 
 module.exports.likeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
@@ -18,7 +18,7 @@ module.exports.likeItem = (req, res) =>
 
 module.exports.dislikeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    req.params.id,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
