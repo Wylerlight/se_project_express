@@ -7,10 +7,28 @@ const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
 const BadRequestError = require("../errors/BadRequestError");
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => {
-      res.send({ data: users });
+module.exports.createUser = (req, res, next) => {
+  const { email, password, name, avatar } = req.body;
+
+  User.findOne({ email })
+    .then((emailFound) => {
+      if (emailFound) {
+        next(new ConflictError("User already exists"));
+      } else {
+        bcrypt
+          .hash(password, 10)
+          .then((hash) => User.create({ name, avatar, email, password: hash }))
+          .then((user) => {
+            res.send({ name, avatar, email, _id: user._id });
+          })
+          .catch((e) => {
+            if (e.name === "ValidationError") {
+              next(new BadRequestError("Invalid data"));
+            } else {
+              next(e);
+            }
+          });
+      }
     })
     .catch((e) => {
       if (e.name === "ValidationError") {
@@ -19,43 +37,6 @@ module.exports.getUsers = (req, res, next) => {
         next(e);
       }
     });
-};
-
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
-    .orFail()
-    .then((user) => res.send({ data: user }))
-    .catch((e) => {
-      if (e.name === "ValidationError") {
-        next(new BadRequestError("Invalid data"));
-      } else {
-        next(e);
-      }
-    });
-};
-
-module.exports.createUser = (req, res, next) => {
-  const { email, password, name, avatar } = req.body;
-
-  User.findOne({ email }).then((emailFound) => {
-    if (emailFound) {
-      next(new ConflictError("User already exists"));
-    } else {
-      bcrypt
-        .hash(password, 10)
-        .then((hash) => User.create({ name, avatar, email, password: hash }))
-        .then((user) => {
-          res.send({ name, avatar, email, _id: user._id });
-        })
-        .catch((e) => {
-          if (e.name === "ValidationError") {
-            next(new BadRequestError("Invalid data"));
-          } else {
-            next(e);
-          }
-        });
-    }
-  });
 };
 
 module.exports.login = (req, res, next) => {
@@ -69,11 +50,7 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((e) => {
-      if (e.name === "ValidationError") {
-        next(new BadRequestError("Invalid data"));
-      } else {
-        next(e);
-      }
+      console.error(e);
     });
 };
 
@@ -88,7 +65,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       return res.send(user);
     })
     .catch((e) => {
-      if (e.name === "ValidationError") {
+      if (e.name === "CastError") {
         next(new BadRequestError("Invalid data"));
       } else {
         next(e);

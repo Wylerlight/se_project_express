@@ -1,6 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
 const ForbiddenError = require("../errors/ForbiddenError");
 const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
 
 module.exports.createClothingItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -21,11 +22,7 @@ module.exports.getClothingItem = (req, res, next) => {
       res.send({ data: items });
     })
     .catch((e) => {
-      if (e.name === "ValidationError") {
-        next(new BadRequestError("Invalid data"));
-      } else {
-        next(e);
-      }
+      console.error(e);
     });
 };
 
@@ -41,12 +38,12 @@ module.exports.deleteClothingItem = (req, res, next) => {
         next(new ForbiddenError("Forbidden"));
       } else {
         ClothingItem.findByIdAndDelete(id)
-          .orFail()
+          .orFail(() => new NotFoundError("Clothing item not found"))
           .then((itemRes) => {
             res.send({ data: itemRes });
           })
           .catch((e) => {
-            if (e.name === "ValidationError") {
+            if (e.name === "CastError") {
               next(new BadRequestError("Invalid data"));
             } else {
               next(e);
@@ -55,7 +52,7 @@ module.exports.deleteClothingItem = (req, res, next) => {
       }
     })
     .catch((e) => {
-      if (e.name === "ValidationError") {
+      if (e.name === "CastError") {
         next(new BadRequestError("Invalid data"));
       } else {
         next(e);

@@ -1,30 +1,28 @@
+const NotFoundError = require("../errors/NotFoundError");
 const ClothingItem = require("../models/clothingItem");
-const { handleErrors } = require("../utils/errors");
 
-module.exports.likeItem = (req, res) =>
+module.exports.likeItem = (req, res, next) =>
   ClothingItem.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail()
+    .orFail(() => new NotFoundError("Likes not found"))
     .then((item) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      next(e);
     });
 
-module.exports.dislikeItem = (req, res) =>
+module.exports.dislikeItem = (req, res, next) =>
   ClothingItem.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail()
+    .orFail(() => new NotFoundError("Likes not found"))
     .then((item) => res.send({ data: item }))
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      next(e);
     });
