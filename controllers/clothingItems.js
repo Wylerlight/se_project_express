@@ -22,7 +22,7 @@ module.exports.getClothingItem = (req, res, next) => {
       res.send({ data: items });
     })
     .catch((e) => {
-      console.error(e);
+      next(e);
     });
 };
 
@@ -30,7 +30,7 @@ module.exports.deleteClothingItem = (req, res, next) => {
   const { id } = req.params;
 
   ClothingItem.findById(id)
-    .orFail()
+    .orFail(() => new NotFoundError("Clothing item not found"))
     .then((item) => {
       const itemOwner = item.owner.toString();
 

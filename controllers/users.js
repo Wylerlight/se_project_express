@@ -50,7 +50,7 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((e) => {
-      console.error(e);
+      next(e);
     });
 };
 
