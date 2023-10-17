@@ -3,35 +3,43 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const { handleErrors, ERROR_404, ERROR_409 } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
+const ConflictError = require("../errors/ConflictError");
+const BadRequestError = require("../errors/BadRequestError");
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.send({ data: users });
     })
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email, password, name, avatar } = req.body;
 
   User.findOne({ email }).then((emailFound) => {
     if (emailFound) {
-      res.status(ERROR_409).send({ message: "User already exists" });
+      next(new ConflictError("User already exists"));
     } else {
       bcrypt
         .hash(password, 10)
@@ -39,15 +47,18 @@ module.exports.createUser = (req, res) => {
         .then((user) => {
           res.send({ name, avatar, email, _id: user._id });
         })
-        .catch((err) => {
-          console.error(err, "console error for createUser");
-          handleErrors(req, res, err);
+        .catch((e) => {
+          if (e.name === "ValidationError") {
+            next(new BadRequestError("Invalid data"));
+          } else {
+            next(e);
+          }
         });
     }
   });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
@@ -58,27 +69,34 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   const { _id: userId } = req.user;
 
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(ERROR_404).send({ message: "User not found" });
+        next(new NotFoundError("User not found"));
       }
       return res.send(user);
     })
-    .catch((err) => {
-      handleErrors(req, res, err);
+    .catch((e) => {
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
   const userId = req.user._id;
 
@@ -90,8 +108,11 @@ module.exports.updateUser = (req, res) => {
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((err) => {
-      console.error(err);
-      handleErrors(req, res, err);
+    .catch((e) => {
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };

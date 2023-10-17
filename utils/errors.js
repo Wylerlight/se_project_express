@@ -24,9 +24,7 @@ function handleErrors(req, res, err) {
   });
 }
 
-module.exports ={
-  
-}
+module.exports = {};
 
 module.exports = {
   ERROR_400,

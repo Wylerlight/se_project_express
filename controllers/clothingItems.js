@@ -1,29 +1,35 @@
 const ClothingItem = require("../models/clothingItem");
-const { handleErrors } = require("../utils/errors");
-const { ERROR_403 } = require("../utils/errors");
+const ForbiddenError = require("../errors/ForbiddenError");
+const BadRequestError = require("../errors/BadRequestError");
 
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.send({ data: item }))
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
-module.exports.getClothingItem = (req, res) => {
+module.exports.getClothingItem = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => {
       res.send({ data: items });
     })
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
 
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   const { id } = req.params;
 
   ClothingItem.findById(id)
@@ -32,7 +38,7 @@ module.exports.deleteClothingItem = (req, res) => {
       const itemOwner = item.owner.toString();
 
       if (req.user._id !== itemOwner) {
-        res.status(ERROR_403).send({ message: "Forbidden" });
+        next(new ForbiddenError("Forbidden"));
       } else {
         ClothingItem.findByIdAndDelete(id)
           .orFail()
@@ -40,13 +46,19 @@ module.exports.deleteClothingItem = (req, res) => {
             res.send({ data: itemRes });
           })
           .catch((e) => {
-            console.error(e);
-            handleErrors(req, res, e);
+            if (e.name === "ValidationError") {
+              next(new BadRequestError("Invalid data"));
+            } else {
+              next(e);
+            }
           });
       }
     })
     .catch((e) => {
-      console.error(e);
-      handleErrors(req, res, e);
+      if (e.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(e);
+      }
     });
 };
